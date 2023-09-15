@@ -1,0 +1,24 @@
+.board {
+    display: grid;
+    grid-template-columns: repeat(10, 30px);
+    grid-gap: 2px;
+}
+
+.off {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    background-color: #ccc;
+    border: 1px solid #999;
+    cursor: pointer;
+    margin: 1px;
+}
+
+.mine {
+    background-color: red;
+    color: white;
+}
+
+.hidden {
+    display: none;
+}
