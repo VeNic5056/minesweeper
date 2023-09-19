@@ -1,8 +1,10 @@
 let gameOver: boolean = false;
 let cells: [boolean?][] = [];
 let cellsInfo: [number?][] = [];
+let kimchiText: string = 'Kimchi!';
 
-function startGame() {
+function startGame(): void {
+    gameOver = false;
     generateBoard();
     started();
     information();
@@ -10,10 +12,10 @@ function startGame() {
 
 function generateBoard() {
     const boardDiv: HTMLDivElement = document.querySelector('#board');
-    boardDiv.innerHTML='';
+    boardDiv.innerHTML = '';
     // boardDiv.removeChild(boardDiv);/
 
-    for (let i = 0; i < 10; i++) {
+    for (let i: number = 0; i < 10; i++) {
         cells.push([]);
         cellsInfo.push([]);
         for (let j = 0; j < 10; j++) {
@@ -42,16 +44,16 @@ function plantMines(e: HTMLDivElement): boolean {
     }
     
 
-function information() {
+function information(): void {
     const boardDiv: HTMLDivElement = document.querySelector('#board');
     
     boardDiv.childNodes.forEach((e: HTMLDivElement) => {
-        for (let i = 0; i < 2; i++) {
+        for (let i: number = 0; i < 2; i++) {
             const myLocation = Number(e.className.split(' ')[0].split('-')[1]);
-            console.log(myLocation);
+            // console.log(myLocation);
 
-            let num = 0;
-            let checking = [
+            let num: number = 0;
+            let checking: null | HTMLDivElement[] = [
                 myLocation % 10 == 0 ? null : document.querySelector(`.id-${myLocation - 11}`),
                 document.querySelector(`.id-${myLocation - 10}`),
                 myLocation % 10 == 9 ? null : document.querySelector(`.id-${myLocation - 9}`),
@@ -68,21 +70,21 @@ function information() {
                 }
             })
 
-            console.log(checking);
-            // e.innerHTML = num.toString();
-            console.log(myLocation / 10, myLocation % 10);
+            // console.log(checking);
+            e.innerHTML = num.toString();
+            // console.log(myLocation / 10, myLocation % 10);
             cellsInfo[Math.floor(myLocation / 10)][myLocation % 10] = num
             
         }
     })
 }
     
-function started() {
+function started(): void {
     const boardDiv: HTMLDivElement = document.querySelector('#board');
     boardDiv.childNodes.forEach((e: HTMLDivElement) => {
         e.addEventListener('click', () => {
             const classes: string = e.className;
-            const myLocation = Number(e.className.split(' ')[0].split('-')[1]);
+            const myLocation: number = Number(e.className.split(' ')[0].split('-')[1]);
 
             e.innerHTML = cellsInfo[Math.floor(myLocation / 10)][myLocation % 10].toString();
             console.log(classes);
@@ -94,10 +96,10 @@ function started() {
     })
 }
 
-function findZero() {
-    /* 언젠가 쓰겠지~ */
+function findZero(myLocation: number): void | boolean {
+    // 귀찮
 }
 
-function enteredMine() {
+function enteredMine(): void {
     gameOver = true;
 }
