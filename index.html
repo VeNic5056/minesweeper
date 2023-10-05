@@ -1,14 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>지뢰찾기</title>
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
-<body>
-  <h1>지뢰찾기</h1>
-  <div class="board" id="board"></div>
-  <button onclick="startGame()">게임 시작</button>
-  <!-- <input type="range" /> -->
-  <script src="./js/main.js"></script>
+<!--  oncontextmenu="return false" -->
+<body oncontextmenu="return false">
+  <main role="main">
+    <section id="head">
+      <h1>지뢰찾기</h1>
+      <p>남은 지뢰: <span id="gatsu">0</span></p>
+    </section>
+
+    <section id="game">
+      <div class="board" id="board"></div>
+    </section>
+    
+    <section id="foot">
+      <button onclick="startGame()">다시시작</button>
+      <div id="diff">
+        <input type="range" value="15" id="difficulty"/>
+        <p>난이도: <span id="difficultyRange" >15</span></p>
+      </div>
+    </section>
+  </main>
+
+<script src="./js/main.js"></script>
+<script>
+  startGame();
+  setInterval(() => {
+    document.querySelector('#difficultyRange').innerHTML = document.querySelector('#difficulty').value;
+  }, 20)
+</script>
 </body>
 </html>

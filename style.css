@@ -1,4 +1,44 @@
+@import url('https://fonts.cdnfonts.com/css/common-pixel');
+@font-face {
+    font-family: 'DungGeunMo';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'DungGeunMo';
+    text-align: center;
+    user-select: none;
+    /* font-family: 'SpaceType', sans-serif; */
+    background: linear-gradient(90deg, #adadad, #5a5a5a);
+}
+
+main {
+    background: linear-gradient(45deg, white, #e4e4e4);
+    border: solid 5px black;
+    border-radius: 50px;
+    justify-content: center;
+    margin-left: 300px;
+    margin-right: 300px;
+    margin-top: 30px;
+    padding: 15px;
+    height:620px;
+}
+
+#head h1 {
+    font-size: 50px;
+    margin-bottom: 3px;
+}
+
+#head p {
+    font-size: 20px;
+}
+
 .board {
+    justify-content: center;
+    margin-bottom: 10px;
+    font-family: 'Common Pixel';
     display: grid;
     grid-template-columns: repeat(10, 30px);
     grid-gap: 2px;
@@ -15,10 +55,92 @@
 }
 
 .mine {
-    background-color: red;
     color: white;
+}
+
+.end.mine {
+    background-color: red;
 }
 
 .hidden {
     display: none;
+}
+
+.flag {
+    background-color: rgb(255, 238, 0);
+}
+
+.end.mine.flag {
+    background-color: rgb(0, 255, 0);
+}
+
+#foot button {
+    transition: 0.07s;
+    padding: 5px;
+    background-color: #757575;
+    font-size: 15px;
+    color: white;
+    font-family: 'DungGeunMo';
+}
+
+#foot button:active {
+    background-color: black;
+    font-size: 14px;
+    padding: 3px;
+    margin: 2.5px;
+}
+
+#diff {
+    display: flex;
+    justify-content: center;
+}
+
+#diff input {
+    margin-right: 30px;
+}
+
+.resetInit {
+    font-size: 20px;
+    color: red;
+}
+
+.reset {
+    transition: 0.7s cubic-bezier(1, 0, 0, 1);
+    font-size: 20px;
+    color: black;
+}
+
+header {
+    color: rgb(0, 160, 152)
+}
+
+input[type="range"] {
+    overflow: hidden;
+    height: 20px;
+    -webkit-appearance: none;
+    margin: 10px 0;
+    width: 25%;
+    background: transparent;
+}
+
+input[type="range"]:focus {
+	outline: none;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 25%;
+    height: 100%;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 2px solid #4b4b4b;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #3a3a3a;
+    box-shadow: 1px 1px 7px #4b4b4b;
+    cursor: pointer;
+    box-shadow: -100vw 0 0 100vw #999999;
 }
