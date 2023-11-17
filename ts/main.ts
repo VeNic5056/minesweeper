@@ -1,92 +1,244 @@
-const word: HTMLSpanElement = document.querySelector('#word');
-const statusSpan: HTMLParagraphElement = document.querySelector('#status');
-const inputBox: HTMLInputElement = document.querySelector('#input');
+let gameOver: boolean = false;
+let cells: [boolean?][] = [];
+let cellsInfo: [[number, boolean]?][] = [];
+let mineCount: number = 0;
 
+function startGame() {
+    gameOver = false;
 
-const words: string[] = [
-    '감자를 찌는 방법에는 크게 세가지의 방법이 있다.',
-    '가는 날이 장날이다',
-    '가는 말이 고와야 오는 말이 곱다',
-    '가랑비에 옷 젖는 줄 모른다',
-    '가랑잎이 솔잎더러 바스락거린다고 한다',
-    '가재는 게 편이라',
-    '가지 많은 나무에 바람 잘 날 없다',
-    '간에 가 붙고 쓸개에 가 붙는다',
-    '간에 기별도 안 간다',
-    '간이 콩알만 해지다',
-    '갈수록 태산',
-    '같은 값이면 다홍치마',
-    '개구리 올챙이 적 생각을 못 한다',
-    '개천에서 용 난다',
-    '고래 싸움에 새우 등 터진다',
-    '고양이 목에 방울 달기',
-    '공든 탑 무너지랴',
-    '구더기 무서워 장 못 담글까',
-    '구슬이 서 말이라도 꿰어야 보배라',
-    '귀에 걸면 귀걸이, 코에 걸면 코걸이',
-    '까마귀 날자 배 떨어진다',
-    '남의 잔치에 감 놓아라 배 놓아라 한다',
-    '나랏말ᄊᆞ미듕귁에달아문ᄍᆞᆼ와로서르ᄉᆞᄆᆞᆺ디아니ᄒᆞᆯᄊᆡ',
-    '이런젼ᄎᆞ로어린ᄇᆡᆨ셔ᇰ이르고져호ᇙ배이셔도',
-    'ᄆᆞᄎᆞᆷ내져ᄠᅳ들시러펴디몯ᄒᆞᆯ노미하니리라',
-    '낮말은 새가 듣고 밤말은 쥐가 듣는다',
-    '늦게 배운 도둑이 날 새는 줄 모른다',
-    '닭 잡아먹고 오리발 내민다',
-    '돌다리도 두들겨 보고 건너라',
-    '똥 묻은 개가 겨 묻은 개 나무란다',
-    '말 한마디에 천 냥 빚도 갚는다',
-    '목구멍이 포도청',
-    '못된 송아지 엉덩이에 뿔 난다',
-    '바늘 도둑이 소 도둑 된다',
-    '백지장도 맞들면 낫다',
-    '노영필아미타여래구존도및고려태조담무갈보살예배도'
-];
+    console.log('asdf');
 
-type Status = {
-    score: number,
-    fail: number,
-    success: number
+    document.querySelector('#gatsu').classList.add('resetInit');
+
+    setTimeout(() => {
+        document.querySelector('#gatsu').classList.add('reset');
+    }, 30);
+
+    setTimeout(() => {
+        document.querySelector('#gatsu').classList.remove('resetInit');
+        document.querySelector('#gatsu').classList.remove('reset');
+    }, 1500);
+
+    generateBoard();
+    started();
+    information();
 }
 
-let now: number = 0;
-let nowWord: string = words[0]
-let userJSON: Status  = {
-    score: 0,
-    fail: 0,
-    success: 0
+
+const getCell = myLocation => {
+    try {
+        return cellsInfo[Math.floor(myLocation / 10)][myLocation % 10]
+    } catch {
+        return [null, null]
+    }
 }
 
-nowWord = words[Math.floor(Math.random() * words.length)];
-word.innerHTML = nowWord;
+function generateBoard(): void {
+    const boardDiv: HTMLDivElement = document.querySelector('#board');
+    mineCount = 0;
+    boardDiv.innerHTML='';
+    // boardDiv.removeChild(boardDiv);/
 
-inputBox.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-        if(entered(nowWord, inputBox.value)) {
-            userJSON.score += 500;
-            userJSON.success += 1;
-        } else {
-            userJSON.fail += 1;
+    for (let i = 0; i < 10; i++) {
+        cells.push([]);
+        cellsInfo.push([]);
+        for (let j = 0; j < 10; j++) {
+            let board: HTMLDivElement = document.createElement('div');
+            board.className = `id-${i * 10 + j} r${j} off`;
+            // board.oncontextmenu = setFlag(this);
+
+            // cells[i].push(plantMines(board)) [0, false]
+            cellsInfo[i].push(plantMines(board))
+
+            boardDiv.appendChild(board);
         }
-        
-        statusSpan.innerHTML = `${userJSON.score}점 (정확 ${userJSON.success}개 | 오타 ${userJSON.fail}개) `;
-        inputBox.value = '';
-        nowWord = words[Math.floor(Math.random() * words.length)];
-        word.innerHTML = nowWord;
-    }
-});
-
-
-
-/**
- * 
- * @param 제시어 주어진 문장 넣는데
- * @param 입력한거 유저가 입력한거 넣는데
- * @returns 제시어랑 입력한거 같은지 확인하는거
- */
-function entered(제시어: string, 입력한거: string): boolean {
-    if(제시어 === 입력한거) {
-        return true;
-    } else {
-        return false;
     }
 }
+
+function plantMines(e: HTMLDivElement): [number, boolean] {
+// boardDiv.childNodes.forEach((e: HTMLDivElement) => {
+    let isMine: number = Math.random();
+    let doc: HTMLInputElement = document.querySelector('#difficulty');
+    let 확률: number = Number(doc.value);
+    const myLocation = Number(e.className.split(' ')[0].split('-')[1]);
+
+    if (isMine <= 확률 / 100) {
+        e.className += ' mine';
+        mineCount += 1;
+
+        document.querySelector('#gatsu').innerHTML = mineCount.toString();
+        return [-1, true];
+    } else {
+        return [0, false];
+    }
+    // })
+}
+
+function information(): void {
+    const boardDiv: HTMLDivElement = document.querySelector('#board');
+
+    boardDiv.childNodes.forEach((e: HTMLDivElement) => {
+        for (let i = 0; i < 2; i++) {
+            const myLocation = Number(e.className.split(' ')[0].split('-')[1]);
+            // console.log(myLocation);
+
+            let num = 0;
+            let checking = [
+                myLocation % 10 == 0 ? null : document.querySelector(`.id-${myLocation - 11}`),
+                document.querySelector(`.id-${myLocation - 10}`),
+                myLocation % 10 == 9 ? null : document.querySelector(`.id-${myLocation - 9}`),
+                myLocation % 10 == 0 ? null : document.querySelector(`.id-${myLocation - 1}`),
+                myLocation % 10 == 9 ? null : document.querySelector(`.id-${myLocation + 1}`),
+                myLocation % 10 == 0 ? null : document.querySelector(`.id-${myLocation + 9}`),
+                document.querySelector(`.id-${myLocation + 10}`),
+                myLocation % 10 == 9 ? null : document.querySelector(`.id-${myLocation + 11}`)
+            ];
+
+            checking.forEach((e: null | HTMLDivElement) => {
+                if (e && e?.className.indexOf('mine') != -1) {
+                    num += 1
+                }
+            })
+
+            // console.log(checking);
+            // e.innerHTML = num.toString();
+            // console.log(myLocation / 10, myLocation % 10);
+            cellsInfo[Math.floor(myLocation / 10)][myLocation % 10][0] = num
+
+        }
+    })
+}
+
+function started(): void {
+    const boardDiv: HTMLDivElement = document.querySelector('#board');
+    boardDiv.childNodes.forEach((e: HTMLDivElement) => {
+        e.addEventListener('contextmenu', (event) => {
+            if(!gameOver) {
+                event.preventDefault();
+                const myLocation = Number(e.className.split(' ')[0].split('-')[1]);
+                const myLocationDiv = document.querySelector(`.id-${myLocation}`).classList;
+
+                if (!myLocationDiv.contains('flag')){
+                    document.querySelector(`.id-${myLocation}`).className += ' flag';
+                    mineCount -= 1;
+                } else {
+                    document.querySelector(`.id-${myLocation}`).classList.remove('flag');
+                    mineCount += 1;
+                }
+                document.querySelector('#gatsu').innerHTML = mineCount.toString();
+
+
+                let isClear: boolean = true;
+                document.querySelectorAll('.mine').forEach((e) => {
+                    isClear = isClear ? e.classList.contains('flag') : false;
+                });
+
+                console.log(isClear);
+
+                if (isClear && document.querySelectorAll('.flag').length === document.querySelectorAll('.mine').length) {
+                    alert('클리어!');
+                    enteredMine();
+                }
+            }
+        })
+
+        e.addEventListener('click', (event) => {
+            if (!gameOver) {
+                if (e.className.indexOf('mine') != -1) {
+                    alert("게임 오버ㅋ")
+                    enteredMine();
+
+                } else {
+                    const textColor = ['blue', 'green', 'red', 'darkblue', 'brown', 'rgb(0, 160, 152)', 'black', 'white']
+                    const classes: string = e.className;
+                    const myLocation = Number(e.className.split(' ')[0].split('-')[1]);
+
+                    cellsInfo[Math.floor(myLocation / 10)][myLocation % 10][1] = true;
+                    e.innerHTML = cellsInfo[Math.floor(myLocation / 10)][myLocation % 10][0].toFixed();
+                    e.style.color = textColor[Number(getCell(myLocation)[0])-1]
+                    findZero(myLocation);
+                    // console.log(classes);
+
+                }
+            }
+        })
+
+    })
+}
+
+function findZero(startLocation: number) {
+    const boardDiv: HTMLDivElement = document.querySelector('#board');
+    const myLocation = Number(boardDiv.className.split(' ')[0].split('-')[1]);
+    let goContinue: boolean = false;
+    let loop: number = 0;
+
+    let checking = [
+        startLocation % 10 == 0 ? null : startLocation - 11,
+        startLocation - 10,
+        startLocation % 10 == 9 ? null : startLocation - 9,
+        startLocation % 10 == 0 ? null : startLocation - 1,
+        startLocation % 10 == 9 ? null : startLocation + 1,
+        startLocation % 10 == 0 ? null : startLocation + 9,
+        startLocation + 10,
+        startLocation % 10 == 9 ? null : startLocation + 11
+    ];
+
+    if(getCell(startLocation)[0] === 0 && getCell(startLocation)[1] == true) {
+        checking.forEach((e: number) => {
+            if(getCell(e)[0] === 0) {
+                // console.log(`id-${e}`);
+                // console.log(document.querySelector(`id-${e}`));
+                document.querySelector(`.id-${e}`).innerHTML = getCell(e)[0]?.toFixed();
+                goContinue = true;
+            }
+        })
+    }
+}
+
+function enteredMine() {
+    gameOver = true;
+
+    for(let i = 0; i < 100; i++) {
+        // console.log(i);
+        const e: HTMLDivElement = document.querySelector(`.id-${i}`);
+        e.classList.add('end');
+        if (!e.classList.contains('mine')) {
+            e.innerHTML = getCell(i)[0].toString()
+
+            const textColor = ['blue', 'green', 'red', 'darkblue', 'brown', 'rgb(0, 160, 152)', 'black', 'white']
+            e.innerHTML = cellsInfo[Math.floor(i / 10)][i % 10][0].toFixed();
+            e.style.color = textColor[Number(getCell(i)[0])-1]
+        }
+    }
+}
+
+/*
+for (let i = 0; i < cells.length * cells[1].length; i++) {
+            boardDiv.childNodes.forEach((e: HTMLDivElement) => {
+            const myLocation = Number(e.className.split(' ')[0].split('-')[1]);
+            
+            if (getCell(myLocation)[0] == 0 && getCell(myLocation)[1] == true) {
+                let checking = [
+                    myLocation % 10 == 0 ? null : myLocation - 11,
+                    myLocation - 10,
+                    myLocation % 10 == 9 ? null : myLocation - 9,
+                    myLocation % 10 == 0 ? null : myLocation - 1,
+                    myLocation % 10 == 9 ? null : myLocation + 1,
+                    myLocation % 10 == 0 ? null : myLocation + 9,
+                    myLocation + 10,
+                    myLocation % 10 == 9 ? null : myLocation + 11
+                ];
+                console.log(checking);
+                checking.forEach((e) => {
+                    if(getCell(e) !== null) {
+                        if(getCell(e)[0] == 0 && getCell(e)[1] == false) {
+                            getCell(e)[1] = true;
+                            console.log(`.id-${e}`);
+                            document.querySelector(`.id-${e}`).innerHTML = getCell(e)[0].toFixed();
+                        }
+                    }
+                })
+            }
+        })
+        
+    } */
